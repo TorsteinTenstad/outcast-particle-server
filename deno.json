@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.205.0/"
+  },
+  "tasks": {
+    "dev": "deno run --watch --unstable -A src/main.ts"
+  }
+}
