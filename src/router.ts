@@ -4,7 +4,7 @@ export const router = new Router();
 const kv = await Deno.openKv();
 
 router.get('/', (ctx: Context) => {
-  ctx.response.body = 'Hello, Egg Hunt!';
+  ctx.response.body = 'Hello, Volatile Particle!';
 });
 
 router.post(`/score`, async (ctx: Context) => {
