@@ -49,6 +49,17 @@ router.post(`/score`, async (ctx: Context) => {
   try {
     const body = await ctx.request.body().value;
     logIncomingRequest("POST", "/score", ctx, body);
+    const existingScore = await kv.get([
+      "scores",
+      body.userId,
+      body.level,
+      body.coins,
+      body.neutralWasUsed,
+    ]);
+    if (existingScore < body.score) {
+      ctx.response.status = 200;
+      return;
+    }
     kv.set(
       ["scores", body.userId, body.level, body.coins, body.neutralWasUsed],
       body.score
