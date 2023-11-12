@@ -51,7 +51,7 @@ router.post(`/score`, async (ctx: Context) => {
       body.coins,
       body.neutralWasUsed,
     ]);
-    if (existingScore < body.score) {
+    if (existingScore > body.score) {
       ctx.response.status = 200;
       return;
     }
