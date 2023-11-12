@@ -140,7 +140,17 @@ router.get(`/leaderboards`, async (ctx: Context) => {
       if (!levelLeaderboard[c]) {
         levelLeaderboard[c] = [];
       }
-      levelLeaderboard[c].push({ userId, score });
+      const existingUserEntryIndex = levelLeaderboard[c].findIndex(
+        (entry) => entry.userId === userId
+      );
+      if (existingUserEntryIndex > -1) {
+        levelLeaderboard[c][existingUserEntryIndex].score = Math.min(
+          score,
+          levelLeaderboard[c][existingUserEntryIndex].score
+        );
+      } else {
+        levelLeaderboard[c].push({ userId, score });
+      }
     }
   }
 
