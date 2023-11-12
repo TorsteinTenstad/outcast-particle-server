@@ -3,13 +3,52 @@ export const router = new Router();
 
 const kv = await Deno.openKv();
 
+const ENABLE_LOGGING = true;
+const LOG_FULL_CONTEXT = false;
+
+const log = (title: string, ctx: Context, additionalInfo?: any) => {
+  if (!ENABLE_LOGGING) return;
+  console.log(title);
+  if (!LOG_FULL_CONTEXT && !additionalInfo) {
+    return;
+  }
+  console.log("---------------------------------------------");
+  if (LOG_FULL_CONTEXT) {
+    console.log(ctx.request);
+    console.log(ctx.response);
+  }
+  if (additionalInfo) {
+    console.log(additionalInfo);
+  }
+  console.log("---------------------------------------------");
+};
+const logIncomingRequest = (
+  requestType: string,
+  endpoint: string,
+  ctx: Context,
+  additionalInfo?: any
+) => {
+  log(
+    `Received ${requestType} request at   \t${endpoint}`,
+    ctx,
+    additionalInfo
+  );
+};
+
+const logOutgoingResponse = (endpoint: string, ctx: Context) => {
+  log(`Sending response from   \t${endpoint}`, ctx, ctx.response.body);
+};
+
 router.get("/", (ctx: Context) => {
+  logIncomingRequest("GET", "/", ctx);
   ctx.response.body = "Hello, Volatile Particle!";
+  logOutgoingResponse("/", ctx);
 });
 
 router.post(`/score`, async (ctx: Context) => {
   try {
     const body = await ctx.request.body().value;
+    logIncomingRequest("POST", "/score", ctx, body);
     kv.set(
       ["scores", body.userId, body.level, body.coins, body.neutralWasUsed],
       body.score
@@ -17,22 +56,28 @@ router.post(`/score`, async (ctx: Context) => {
 
     ctx.response.status = 200;
   } catch {
+    logOutgoingResponse("/score", ctx);
     ctx.throw(400);
   }
+  logOutgoingResponse("/score", ctx);
 });
 
 router.post(`/username`, async (ctx: Context) => {
   try {
     const body = await ctx.request.body().value;
+    logIncomingRequest("POST", "/username", ctx, body);
     kv.set(["usernames", body.userId], body.username);
 
     ctx.response.status = 200;
   } catch {
+    logOutgoingResponse("/username", ctx);
     ctx.throw(400);
   }
+  logOutgoingResponse("/username", ctx);
 });
 
 router.get(`/score`, async (ctx: Context) => {
+  logIncomingRequest("GET", "/score", ctx);
   const userId = ctx.request.url.searchParams.get("userId");
   const level = ctx.request.url.searchParams.get("level");
   const coins = ctx.request.url.searchParams.get("coins");
@@ -54,6 +99,7 @@ router.get(`/score`, async (ctx: Context) => {
 
   ctx.response.body = JSON.stringify({ score: score });
   ctx.response.status = 200;
+  logOutgoingResponse("/score", ctx);
 });
 
 interface LeaderboardEntry {
@@ -65,6 +111,7 @@ interface LeaderboardEntry {
 
 router.get(`/leaderboards`, async (ctx: Context) => {
   const clientUserId = ctx.request.url.searchParams.get("userId");
+  logIncomingRequest("GET", "/leaderboards", ctx);
   if (!clientUserId) {
     ctx.throw(400);
   }
@@ -106,7 +153,7 @@ router.get(`/leaderboards`, async (ctx: Context) => {
           );
 
           levelLeaderboard[key] = entries.filter((_, index) =>
-            userIdIndex == -1
+            userIdIndex < 2
               ? index < 4
               : index === 0 ||
                 (userIdIndex - 1 <= index && index <= userIdIndex + 1)
@@ -122,6 +169,6 @@ router.get(`/leaderboards`, async (ctx: Context) => {
       );
     })
   );
-
   ctx.response.body = JSON.stringify(leaderboards);
+  logOutgoingResponse("/leaderboards", ctx);
 });
