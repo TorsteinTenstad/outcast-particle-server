@@ -9,10 +9,6 @@ const LOG_FULL_CONTEXT = false;
 const log = (title: string, ctx: Context, additionalInfo?: any) => {
   if (!ENABLE_LOGGING) return;
   console.log(title);
-  if (!LOG_FULL_CONTEXT && !additionalInfo) {
-    return;
-  }
-  console.log("---------------------------------------------");
   if (LOG_FULL_CONTEXT) {
     console.log(ctx.request);
     console.log(ctx.response);
@@ -20,7 +16,6 @@ const log = (title: string, ctx: Context, additionalInfo?: any) => {
   if (additionalInfo) {
     console.log(additionalInfo);
   }
-  console.log("---------------------------------------------");
 };
 const logIncomingRequest = (
   requestType: string,
