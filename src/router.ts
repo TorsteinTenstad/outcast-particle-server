@@ -168,11 +168,15 @@ router.get(`/leaderboards`, async (ctx: Context) => {
             (entry) => entry.userId === parseInt(clientUserId)
           );
 
+          const entriesToShowAroundUser =
+            userIdIndex == entries.length - 1 ? 2 : 1;
+
           levelLeaderboard[key] = entries.filter((_, index) =>
             userIdIndex < 2
               ? index < 4
               : index === 0 ||
-                (userIdIndex - 1 <= index && index <= userIdIndex + 1)
+                (userIdIndex - entriesToShowAroundUser <= index &&
+                  index <= userIdIndex + entriesToShowAroundUser)
           );
 
           const promises = levelLeaderboard[key].map(async (entry) => {
