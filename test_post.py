@@ -3,30 +3,30 @@ import json
 
 
 def main():
-    userId = 4
-    score = 1000
-    username = 'test_user'
+    userIds = [526, 1302, 1169, 6782649284, 93610573901, 8402850274945]
+    for userId in userIds:
+        post_url = 'http://volatile-particle.deno.dev/username'
+        post_headers = {'Content-Type': 'application/json'}
+        post_data = {
+            'userId': userId,
+            'password': "iknowwhatimdoingtrustme",
+        }
 
-    post_url = 'http://localhost:8000/username'
-    post_headers = {'Content-Type': 'application/json'}
-    post_data = {
-        'userId': userId,
-        'username': username,
-    }
+        requests.delete(post_url, json=post_data, headers=post_headers)
 
-    requests.post(post_url, json=post_data, headers=post_headers)
+    for userID, level, coins, neutralWasUsed in [
+    ]:
+        post_url = 'http://volatile-particle.deno.dev/score'
+        post_headers = {'Content-Type': 'application/json'}
+        post_data = {
+            'userId': userId,
+            'level': level,
+            'coins': coins,
+            'neutralWasUsed': neutralWasUsed,
+            'password': "iknowwhatimdoingtrustme",
+        }
 
-    post_url = 'http://localhost:8000/score'
-    post_headers = {'Content-Type': 'application/json'}
-    post_data = {
-        'userId': userId,
-        'score': score,
-        'level': 'Level 1',
-        'coins': 3,
-        'neutralWasUsed': False,
-    }
-
-    requests.post(post_url, json=post_data, headers=post_headers)
+        requests.delete(post_url, json=post_data, headers=post_headers)
 
 
 if __name__ == "__main__":
