@@ -2,7 +2,6 @@ import { Router, Context } from "https://deno.land/x/oak@v12.1.0/mod.ts";
 export const router = new Router();
 
 const kv = await Deno.openKv();
-
 const ENABLE_LOGGING = true;
 const LOG_FULL_CONTEXT = false;
 
@@ -108,6 +107,48 @@ router.get(`/score`, async (ctx: Context) => {
   logOutgoingResponse("/score", ctx);
 });
 
+router.delete(`/score`, async (ctx: Context) => {
+  try {
+    const body = await ctx.request.body().value;
+    const password = body.password;
+    if (password !== "iknowwhatimdoingtrustme") {
+      logOutgoingResponse("/score", ctx);
+      ctx.throw(400);
+    }
+    logIncomingRequest("DELETE", "/score", ctx, body);
+    kv.delete([
+      "scores",
+      body.userId,
+      body.level,
+      body.coins,
+      body.neutralWasUsed,
+    ]);
+    ctx.response.status = 200;
+  } catch {
+    logOutgoingResponse("/score", ctx);
+    ctx.throw(400);
+  }
+  logOutgoingResponse("/score", ctx);
+});
+
+router.delete(`/username`, async (ctx: Context) => {
+  try {
+    const body = await ctx.request.body().value;
+    const password = body.password;
+    if (password !== "iknowwhatimdoingtrustme") {
+      logOutgoingResponse("/username", ctx);
+      ctx.throw(400);
+    }
+    logIncomingRequest("DELETE", "/username", ctx, body);
+    kv.delete(["usernames", body.userId]);
+    ctx.response.status = 200;
+  } catch {
+    logOutgoingResponse("/username", ctx);
+    ctx.throw(400);
+  }
+  logOutgoingResponse("/username", ctx);
+});
+
 interface LeaderboardEntry {
   rank?: number;
   userId: number;
@@ -125,6 +166,7 @@ router.get(`/leaderboards`, async (ctx: Context) => {
   const kvEntries = kv.list<number>({ prefix: ["scores"] });
 
   for await (const kvEntry of kvEntries) {
+    console.log(kvEntry);
     const [_, userId, level, coins] = kvEntry.key as [
       unknown,
       number,
