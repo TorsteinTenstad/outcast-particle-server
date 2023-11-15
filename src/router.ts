@@ -110,19 +110,24 @@ router.get(`/score`, async (ctx: Context) => {
 router.delete(`/score`, async (ctx: Context) => {
   try {
     const body = await ctx.request.body().value;
+    logIncomingRequest("DELETE", "/score", ctx, body);
     const password = body.password;
     if (password !== "iknowwhatimdoingtrustme") {
       logOutgoingResponse("/score", ctx);
       ctx.throw(400);
     }
-    logIncomingRequest("DELETE", "/score", ctx, body);
-    kv.delete([
-      "scores",
-      body.userId,
-      body.level,
-      body.coins,
-      body.neutralWasUsed,
-    ]);
+    for await (const kvEntry of kv.list<string>({ prefix: ["scores"] })) {
+      const [_, _userId, level, _coins, _neutralWasUsed] = kvEntry.key as [
+        unknown,
+        number,
+        string,
+        number,
+        boolean
+      ];
+      if (level === body.level) {
+        kv.delete(kvEntry.key);
+      }
+    }
     ctx.response.status = 200;
   } catch {
     logOutgoingResponse("/score", ctx);
