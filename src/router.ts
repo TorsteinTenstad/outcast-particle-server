@@ -30,7 +30,7 @@ const logIncomingRequest = (
 };
 
 const logOutgoingResponse = (endpoint: string, ctx: Context) => {
-  log(`Sending response from   \t${endpoint}`, ctx, ctx.response.body);
+  log(`Sending response from   \t${endpoint}`, ctx);
 };
 
 router.get("/", (ctx: Context) => {
@@ -185,7 +185,6 @@ router.get(`/leaderboards`, async (ctx: Context) => {
   const kvEntries = kv.list<number>({ prefix: ["scores"] });
 
   for await (const kvEntry of kvEntries) {
-    console.log(kvEntry);
     const [_, userId, level, coins] = kvEntry.key as [
       unknown,
       number,
