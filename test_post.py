@@ -14,15 +14,11 @@ def main():
 
         requests.delete(post_url, json=post_data, headers=post_headers)
 
-    for userID, level, coins, neutralWasUsed in [
-    ]:
+    for level in ["Hug the wall", "Precision"]:
         post_url = 'http://volatile-particle.deno.dev/score'
         post_headers = {'Content-Type': 'application/json'}
         post_data = {
-            'userId': userId,
             'level': level,
-            'coins': coins,
-            'neutralWasUsed': neutralWasUsed,
             'password': "iknowwhatimdoingtrustme",
         }
 

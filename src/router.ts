@@ -107,6 +107,7 @@ router.get(`/score`, async (ctx: Context) => {
   logOutgoingResponse("/score", ctx);
 });
 
+/*
 router.delete(`/score`, async (ctx: Context) => {
   try {
     const body = await ctx.request.body().value;
@@ -165,6 +166,7 @@ router.delete(`/username`, async (ctx: Context) => {
   }
   logOutgoingResponse("/username", ctx);
 });
+*/
 
 interface LeaderboardEntry {
   rank?: number;
